@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Cinema{% endblock %}
+
+{% block content %}
+<h1>Programação do Cinema</h1>
+<p><a class="btn" href="{{ url_for('cinema.cadastrar_sessao') }}">+ Nova sessão</a></p>
+
+{# TODO ALUNO (resolvido): verifica se há sessões antes de mostrar a tabela #}
+{% if sessoes %}
+<table>
+    <thead>
+        <tr>
+            <th>Filme</th>
+            <th>Classificação</th>
+            <th>Sala</th>
+            <th>Data/hora</th>
+            <th>Preço</th>
+        </tr>
+    </thead>
+    <tbody>
+        {# TODO ALUNO (resolvido): loop sobre a lista de sessões #}
+        {% for sessao in sessoes %}
+        <tr>
+            {# sessao.filme → acessa o objeto Filme via relationship #}
+            <td>{{ sessao.filme.titulo }}</td>
+            <td>{{ sessao.filme.classificacao }}</td>
+            {# sessao.sala → acessa o objeto Sala via relationship #}
+            <td>Sala {{ sessao.sala.numero }}</td>
+            {# strftime formata o objeto datetime em texto legível #}
+            <td>{{ sessao.data_hora.strftime("%d/%m/%Y %H:%M") }}</td>
+            <td>R$ {{ "%.2f"|format(sessao.preco) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nenhuma sessão cadastrada ainda. <a href="{{ url_for('cinema.cadastrar_sessao') }}">Cadastre a primeira!</a></p>
+{% endif %}
+{% endblock %}
