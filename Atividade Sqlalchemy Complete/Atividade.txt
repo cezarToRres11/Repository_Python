@@ -1,0 +1,28 @@
+================================================================================
+AtividadesFlaskAlchemy — Corrija o código (Flask + SQLAlchemy)
+================================================================================
+
+Como usar
+---------
+• Cada arquivo tem trechos FALTANDO ou ERRADOS (marcados com TODO ALUNO).
+• Corrija na ordem 01 → 05.
+• Consulte AulaSQLalchemy/app.py como referência.
+• Gabarito resumido: GABARITO.txt (somente professor).
+
+Testar o arquivo 05 (app completo)
+----------------------------------
+cd flask/AtividadesFlaskAlchemy
+pip install flask flask-sqlalchemy
+python 05_corrigir_app_completo.py
+
+Arquivos
+--------
+01_corrigir_configuracao.py   → imports, config SQLite, db = SQLAlchemy
+02_corrigir_model.py            → class Aluno(db.Model) e colunas
+03_corrigir_create.py           → POST cadastrar: add + commit + redirect
+04_corrigir_read_update.py      → listar, buscar e atualizar
+05_corrigir_app_completo.py     → desafio final (vários erros no mesmo app)
+
+Dica: após corrigir, rode o arquivo no terminal e leia a mensagem de erro.
+
+================================================================================
