@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Painel — Figurinhas{% endblock %}
+
+{% block content %}
+<h1>Troca de Figurinhas</h1>
+<p class="subtitulo">Colecionadores, Ofertas e Itens</p>
+
+<div class="cards">
+    <div class="card">
+        <span class="card-num">{{ total_colecionadores }}</span>
+        <span class="card-label">Colecionadores</span>
+    </div>
+    <div class="card">
+        <span class="card-num">{{ total_figurinhas }}</span>
+        <span class="card-label">Figurinhas</span>
+    </div>
+    <div class="card">
+        <span class="card-num">{{ total_ofertas }}</span>
+        <span class="card-label">Ofertas</span>
+    </div>
+</div>
+
+<p><a class="btn" href="{{ url_for('figurinhas.index') }}">Ver ofertas</a></p>
+{% endblock %}

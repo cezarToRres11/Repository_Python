@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block title %}Troca de Figurinhas{% endblock %}
+
+{% block content %}
+<h1>Ofertas de troca — Copa do Mundo</h1>
+<p><a class="btn" href="{{ url_for('figurinhas.cadastrar_oferta') }}">+ Nova oferta</a></p>
+
+{% if ofertas %}
+<table>
+    <thead>
+        <tr>
+            <th>Colecionador</th>
+            <th>Cidade</th>
+            <th>Oferece / Deseja</th>
+            <th>Observação</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for oferta in ofertas %}
+        <tr>
+            <td>{{ oferta.colecionador.apelido }}</td>
+            <td>{{ oferta.colecionador.cidade }}</td>
+            <td>
+                {% for item in oferta.itens %}
+                    {% if item.tipo == "oferece" %}
+                        <span>Oferece: #{{ item.figurinha.numero }} {{ item.figurinha.nome_jogador }}</span>
+                    {% else %}
+                        <span>Deseja: #{{ item.figurinha.numero }} {{ item.figurinha.nome_jogador }}</span>
+                    {% endif %}
+                    {% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ oferta.observacao or "—" }}</td>
+            <td>{{ oferta.data_criacao.strftime('%d/%m/%Y %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="vazio">Nenhuma oferta publicada.</p>
+{% endif %}
+{% endblock %}
