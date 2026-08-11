@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — TaskFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="fw-bold mb-1">Minhas tarefas</h1>
+        <p class="text-secondary mb-0">
+            Organize suas atividades e acompanhe seu progresso.
+        </p>
+    </div>
+
+    <a href="{{ url_for('nova_tarefa') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i>
+        Nova tarefa
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row align-items-end">
+            <div class="col-md-6">
+                <label for="filtroStatus" class="form-label fw-semibold">
+                    Filtrar por status
+                </label>
+
+                <select id="filtroStatus" class="form-select">
+                    <option value="">Todas as tarefas</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Em andamento">Em andamento</option>
+                    <option value="Concluída">Concluída</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mt-3 mt-md-0 text-md-end">
+                <span id="contadorTarefas" class="text-secondary"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tarefasContainer" class="row g-4">
+    {% for tarefa in tarefas %}
+    <div class="col-md-6 col-lg-4 tarefa-item" data-status="{{ tarefa['status'] }}">
+        <div class="card task-card h-100 shadow-sm border-0 status-{{ tarefa['status']|replace(' ', '-')|replace('í', 'i')|replace('ã', 'a')|lower }}">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <h2 class="h5 fw-bold">{{ tarefa["titulo"] }}</h2>
+
+                    {% if tarefa["status"] == "Pendente" %}
+                        <span class="badge text-bg-warning">Pendente</span>
+                    {% elif tarefa["status"] == "Em andamento" %}
+                        <span class="badge text-bg-primary">Em andamento</span>
+                    {% else %}
+                        <span class="badge text-bg-success">Concluída</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-secondary flex-grow-1">
+                    {{ tarefa["descricao"] or "Sem descrição." }}
+                </p>
+
+                <div class="d-flex gap-2">
+                    <a
+                        href="{{ url_for('editar', id=tarefa['id']) }}"
+                        class="btn btn-outline-primary btn-sm"
+                    >
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('excluir', id=tarefa['id']) }}"
+                        onsubmit="return confirm('Deseja realmente excluir esta tarefa?');"
+                    >
+                        <button class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Você ainda não possui tarefas.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="semResultados" class="alert alert-secondary d-none mt-4">
+    Nenhuma tarefa encontrada para esse filtro.
+</div>
+
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="h5 mb-1">
+                    <i class="bi bi-lightbulb"></i>
+                    Frase motivacional
+                </h2>
+                <p id="frase" class="mb-0 text-secondary">
+                    Carregando...
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const filtro = document.getElementById("filtroStatus");
+const container = document.getElementById("tarefasContainer");
+const contador = document.getElementById("contadorTarefas");
+const semResultados = document.getElementById("semResultados");
+
+function classeStatus(status) {
+    if (status === "Pendente") return "status-pendente";
+    if (status === "Em andamento") return "status-em-andamento";
+    return "status-concluida";
+}
+
+function badgeStatus(status) {
+    if (status === "Pendente") return '<span class="badge text-bg-warning">Pendente</span>';
+    if (status === "Em andamento") return '<span class="badge text-bg-primary">Em andamento</span>';
+    return '<span class="badge text-bg-success">Concluída</span>';
+}
+
+function renderTarefas(tarefas) {
+    container.innerHTML = "";
+
+    contador.textContent =
+        `${tarefas.length} tarefa${tarefas.length === 1 ? "" : "s"}`;
+
+    if (tarefas.length === 0) {
+        semResultados.classList.remove("d-none");
+        return;
+    }
+
+    semResultados.classList.add("d-none");
+
+    tarefas.forEach(tarefa => {
+        const col = document.createElement("div");
+        col.className = "col-md-6 col-lg-4";
+
+        col.innerHTML = `
+            <div class="card task-card h-100 shadow-sm border-0 ${classeStatus(tarefa.status)}">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <h2 class="h5 fw-bold">${escapeHtml(tarefa.titulo)}</h2>
+                        ${badgeStatus(tarefa.status)}
+                    </div>
+
+                    <p class="text-secondary flex-grow-1">
+                        ${escapeHtml(tarefa.descricao || "Sem descrição.")}
+                    </p>
+
+                    <div class="d-flex gap-2">
+                        <a href="/editar/${tarefa.id}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+
+                        <form method="POST" action="/excluir/${tarefa.id}"
+                              onsubmit="return confirm('Deseja realmente excluir esta tarefa?');">
+                            <button class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(col);
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+async function carregarTarefas() {
+    const status = filtro.value;
+    const url = status
+        ? `/api/tarefas?status=${encodeURIComponent(status)}`
+        : "/api/tarefas";
+
+    try {
+        const resposta = await fetch(url);
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao buscar tarefas.");
+        }
+
+        const tarefas = await resposta.json();
+        renderTarefas(tarefas);
+    } catch (erro) {
+        console.error(erro);
+        contador.textContent = "Não foi possível atualizar as tarefas.";
+    }
+}
+
+async function carregarFrase() {
+    try {
+        const resposta = await fetch("/api/frase");
+        const dados = await resposta.json();
+
+        document.getElementById("frase").textContent =
+            dados.slip?.advice || "Continue avançando!";
+    } catch (erro) {
+        document.getElementById("frase").textContent =
+            "Continue avançando. Pequenos passos também são progresso.";
+    }
+}
+
+filtro.addEventListener("change", carregarTarefas);
+carregarTarefas();
+carregarFrase();
+</script>
+{% endblock %}

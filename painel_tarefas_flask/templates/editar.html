@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Editar tarefa — TaskFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 fw-bold">Editar tarefa</h1>
+                        <p class="text-secondary mb-0">
+                            Atualize os dados da tarefa.
+                        </p>
+                    </div>
+
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                        Voltar
+                    </a>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input
+                            type="text"
+                            name="titulo"
+                            class="form-control"
+                            maxlength="150"
+                            value="{{ tarefa['titulo'] }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea
+                            name="descricao"
+                            class="form-control"
+                            rows="5"
+                            maxlength="1000"
+                        >{{ tarefa['descricao'] or '' }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            <option {% if tarefa['status'] == 'Pendente' %}selected{% endif %}>
+                                Pendente
+                            </option>
+                            <option {% if tarefa['status'] == 'Em andamento' %}selected{% endif %}>
+                                Em andamento
+                            </option>
+                            <option {% if tarefa['status'] == 'Concluída' %}selected{% endif %}>
+                                Concluída
+                            </option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Salvar alterações
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
